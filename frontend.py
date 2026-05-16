@@ -35,18 +35,21 @@ html, body, [class*="css"] {
 }
 
 /* ── Hide Streamlit chrome ── */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
+#MainMenu {display: none !important;}
+footer {display: none !important;}
 [data-testid="manage-app-button"] {display: none !important;}
 .viewerBadge_container__r5tak {display: none !important;}
-/* Hide toolbar action buttons but keep the running indicator */
+/* Hide ONLY the specific toolbar action buttons — NOT the sidebar toggle */
+[data-testid="stToolbar"] [data-testid="stActionButton"] {display: none !important;}
+[data-testid="stToolbar"] [data-testid="stActionButtonIcon"] {display: none !important;}
+[data-testid="stDecoration"] {display: none !important;}
+[data-testid="stToolbar"] > div > div > a {display: none !important;}
+[data-testid="stToolbar"] .stDeployButton {display: none !important;}
+[data-testid="stMainMenu"] {display: none !important;}
+[data-testid="stAppDeployButton"] {display: none !important;}
+.stDeployButton {display: none !important;}
 [data-testid="stToolbar"] {
-    visibility: visible !important;
-}
-[data-testid="stToolbar"] button,
-[data-testid="stToolbar"] a,
-[data-testid="stToolbar"] [data-testid="stActionButton"] {
-    display: none !important;
+    visibility: hidden !important;
 }
 [data-testid="stStatusWidget"] {
     visibility: visible !important;
@@ -71,6 +74,26 @@ header[data-testid="stHeader"] {
     background: rgba(13,13,13,0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid #1A1A1A;
+}
+/* Sidebar toggle buttons — make clearly visible */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+    z-index: 9999 !important;
+}
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button,
+button[data-testid="stSidebarCollapseButton"] {
+    background: #1A1A1A !important;
+    border: 1px solid #333 !important;
+    border-radius: 2px !important;
+    color: #C8C5C0 !important;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+[data-testid="stSidebarCollapsedControl"] button:hover,
+[data-testid="collapsedControl"] button:hover,
+button[data-testid="stSidebarCollapseButton"]:hover {
+    border-color: #E63946 !important;
+    color: #E63946 !important;
 }
 
 /* ── Sidebar ── */
@@ -612,29 +635,44 @@ def feed_page():
 
 # ── Main App Logic ──
 if st.session_state.user is None:
-    login_page()
-else:
-    # Sidebar
     with st.sidebar:
-        user_email = st.session_state.user.get("email", "")
-        display_name = user_email.split("@")[0]
         st.markdown(
-            f"<div style='font-family:Inter,sans-serif;font-size:13px;color:#888;"
-            f"letter-spacing:0.06em;text-transform:uppercase;padding:8px 0 4px;'>"
-            f"Signed in as</div>"
-            f"<div style='font-family:Inter,sans-serif;font-size:16px;font-weight:600;"
-            f"color:#F0EDE8;padding-bottom:16px;'>{display_name}</div>",
+            "<div style='font-family:Inter,sans-serif;font-size:14px;font-weight:700;"
+            "letter-spacing:0.18em;text-transform:uppercase;color:#F0EDE8;padding:8px 0;'>"
+            "FAST<span style=\"color:#E63946\">FEED</span></div>"
+            "<div style='font-family:Inter,sans-serif;font-size:12px;color:#444;"
+            "letter-spacing:0.04em;'>Share moments. See the world.</div>",
             unsafe_allow_html=True,
         )
+    login_page()
+else:
+    # ── Top navigation bar (replaces sidebar) ──
+    user_email = st.session_state.user.get("email", "")
+    display_name = user_email.split("@")[0]
 
+    bar_left, bar_right = st.columns([4, 1])
+    with bar_left:
+        st.markdown(
+            f"<div style='display:flex;align-items:center;gap:16px;padding:4px 0;'>"
+            f"<span style='font-family:Inter,sans-serif;font-size:15px;font-weight:700;"
+            f"letter-spacing:0.18em;text-transform:uppercase;color:#F0EDE8;'>"
+            f"FAST<span style=\"color:#E63946\">FEED</span></span>"
+            f"<span style='font-family:Inter,sans-serif;font-size:12px;color:#555;'>"
+            f"·</span>"
+            f"<span style='font-family:Inter,sans-serif;font-size:13px;color:#888;'>"
+            f"{display_name}</span>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+    with bar_right:
         if st.button("Logout", use_container_width=True):
             st.session_state.user = None
             st.session_state.token = None
             st.rerun()
 
-        st.markdown("---")
+    st.markdown('<div style="border-top:1px solid #1A1A1A;margin:0 0 4px;"></div>',
+                unsafe_allow_html=True)
 
-    # Tab-based navigation
     tab_feed, tab_upload = st.tabs(["FEED", "SHARE"])
 
     with tab_feed:
