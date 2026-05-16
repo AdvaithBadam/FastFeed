@@ -8,7 +8,7 @@ from datetime import datetime
 st.set_page_config(page_title="FastFeed", page_icon="◆", layout="wide", initial_sidebar_state="collapsed")
 
 # ── API URL ──
-API_URL = os.getenv("API_URL", "https://fastfeed.onrender.com")
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 # ── Session State ──
 if 'token' not in st.session_state:
