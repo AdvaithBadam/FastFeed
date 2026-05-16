@@ -15,6 +15,8 @@ if 'token' not in st.session_state:
     st.session_state.token = None
 if 'user' not in st.session_state:
     st.session_state.user = None
+if 'upload_key' not in st.session_state:
+    st.session_state.upload_key = 0
 
 
 # ── Premium CSS Injection ──
@@ -35,6 +37,36 @@ html, body, [class*="css"] {
 /* ── Hide Streamlit chrome ── */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
+[data-testid="manage-app-button"] {display: none !important;}
+.viewerBadge_container__r5tak {display: none !important;}
+/* Hide toolbar action buttons but keep the running indicator */
+[data-testid="stToolbar"] {
+    visibility: visible !important;
+}
+[data-testid="stToolbar"] button,
+[data-testid="stToolbar"] a,
+[data-testid="stToolbar"] [data-testid="stActionButton"] {
+    display: none !important;
+}
+[data-testid="stStatusWidget"] {
+    visibility: visible !important;
+}
+[data-testid="stStatusWidget"] [role="status"] {
+    color: #E63946 !important;
+}
+/* Custom visible spinner override */
+.stSpinner {
+    text-align: center;
+    padding: 16px 0;
+}
+.stSpinner > div {
+    border-top-color: #E63946 !important;
+}
+.stSpinner > div > span {
+    color: #888 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+}
 header[data-testid="stHeader"] {
     background: rgba(13,13,13,0.85);
     backdrop-filter: blur(12px);
@@ -468,8 +500,13 @@ def upload_page():
     uploaded_file = st.file_uploader(
         "Choose media",
         type=['png', 'jpg', 'jpeg', 'mp4', 'avi', 'mov', 'mkv', 'webm'],
+        key=f"uploader_{st.session_state.upload_key}",
     )
-    caption = st.text_area("Caption", placeholder="What's on your mind?")
+    caption = st.text_area(
+        "Caption",
+        placeholder="What's on your mind?",
+        key=f"caption_{st.session_state.upload_key}",
+    )
 
     if uploaded_file and st.button("Share", type="primary"):
         with st.spinner("Uploading…"):
@@ -478,6 +515,7 @@ def upload_page():
             response = requests.post(f"{API_URL}/upload", files=files, data=data, headers=get_headers())
             if response.status_code == 200:
                 st.success("Posted!")
+                st.session_state.upload_key += 1
                 st.rerun()
             else:
                 st.error("Upload failed")
