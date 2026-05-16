@@ -4,7 +4,7 @@ import base64
 import urllib.parse
 import os
 
-st.set_page_config(page_title="Simple Social", layout="wide")
+st.set_page_config(page_title="FastFeed", layout="wide")
 
 # API URL Configuration - uses env var for production, localhost for dev
 API_URL = os.getenv("API_URL", "http://localhost:8000")
@@ -24,7 +24,7 @@ def get_headers():
 
 
 def login_page():
-    st.title("🚀 Welcome to Simple Social")
+    st.title("🚀 Welcome to FastFeed")
 
     # Simple form with two buttons
     email = st.text_input("Email:")
