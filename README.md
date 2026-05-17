@@ -60,3 +60,4 @@ uv run streamlit run frontend.py
 - **Backend:** Designed to be easily deployed on Render as a Web Service.
 - **Frontend:** Configured to deploy on Streamlit Community Cloud.
 - **Dynamic Routing:** The frontend uses an `API_URL` environment variable to connect to the deployed backend automatically.
+- **Deployed link:** The website is currently deployed on https://fastfeed.streamlit.app/ 
