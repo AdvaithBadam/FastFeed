@@ -11,5 +11,7 @@ wheels/
 
 # Secrets and DB
 .env
+**/.env
+.env*
 *.db
 
